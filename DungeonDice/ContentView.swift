@@ -4,10 +4,12 @@
 //
 //  Created by AGUILAR, DANIEL on 2/4/26.
 //
+
 import SwiftUI
 
 struct ContentView: View {
-    enum Dice: Int, CaseIterable {
+    enum Dice: Int, CaseIterable, Identifiable {
+        
         case four = 4
         case six = 6
         case eight = 8
@@ -15,6 +17,12 @@ struct ContentView: View {
         case twelve = 12
         case twenty = 20
         case hundred = 100
+        
+        var id: Int { // one value computed properties (or functions) don't need return
+            return rawValue // Each rawValue is unique, so it's a good ID
+        }
+        
+        var description: String {"\(rawValue)-sided" }
         
         func roll() -> Int {
             return Int.random(in: 1...self.rawValue)
@@ -41,8 +49,8 @@ struct ContentView: View {
             Spacer()
             
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 102))]) {
-                ForEach(Dice.allCases, id: \.self) { dice in
-                    Button("\(dice.rawValue)-sided") {
+                ForEach(Dice.allCases) { dice in
+                    Button(dice.description) {
                         resultMessage = "You rolled a \(dice.roll()) on a \(dice.rawValue)-sided dice"
                     }
                 }
