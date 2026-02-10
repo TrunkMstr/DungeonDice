@@ -4,7 +4,6 @@
 //
 //  Created by AGUILAR, DANIEL on 2/4/26.
 //
-
 import SwiftUI
 
 struct ContentView: View {
@@ -30,6 +29,8 @@ struct ContentView: View {
     }
     
     @State private var resultMessage = ""
+    @State private var animationTrigger = false // changed when animation occured
+    @State private var isDoneAnimating = true
     
     var body: some View {
         VStack {
@@ -44,7 +45,14 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
+                .rotation3DEffect(isDoneAnimating ? .degrees(360) : .degrees(0), axis: (x: 1, y: 0, z: 0)) // one full rotation on x-axis only
                 .frame(height: 150)
+                .onChange(of: animationTrigger) {
+                    isDoneAnimating = false // set to beginning "false" state right away
+                    withAnimation(.interpolatingSpring(duration: 0.6, bounce: 0.4)) {
+                        isDoneAnimating = true
+                    }
+                }
             
             Spacer()
             
@@ -52,12 +60,12 @@ struct ContentView: View {
                 ForEach(Dice.allCases) { dice in
                     Button(dice.description) {
                         resultMessage = "You rolled a \(dice.roll()) on a \(dice.rawValue)-sided dice"
+                        animationTrigger.toggle() // a change of this value triggers an animation
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
                 }
-            .buttonStyle(.borderedProminent)
-            .tint(.red)
             }
-               
         }
         .padding()
     }
